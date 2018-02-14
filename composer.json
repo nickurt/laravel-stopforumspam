@@ -1,0 +1,30 @@
+{
+    "name": "nickurt/laravel-stopforumspam",
+    "description": "StopForumSpam for Laravel 5",
+    "keywords": ["stopforumspam", "laravel"],
+    "license": "MIT",
+    "require": {
+        "php": "^7.0",
+        "laravel/framework": "~5.5.0|~5.6.0",
+        "guzzlehttp/guzzle": "5.*|6.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "nickurt\\StopForumSpam\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "nickurt\\StopForumSpam\\ServiceProvider"
+            ],
+            "aliases": {
+                "StopForumSpam": "nickurt\\StopForumSpam\\Facade"
+            }
+        }
+    }
+}
