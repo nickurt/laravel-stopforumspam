@@ -10,7 +10,7 @@ class IsSpamIp
     public $ip;
 
     /**
-     * IsSpam constructor.
+     * IsSpamIp constructor.
      * @param $ip
      */
     public function __construct($ip)

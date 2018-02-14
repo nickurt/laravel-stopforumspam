@@ -88,6 +88,24 @@ class StopForumSpam
     /**
      * @return mixed
      */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param $username
+     * @return $this
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getFrequency()
     {
         return $this->frequency;
@@ -114,7 +132,7 @@ class StopForumSpam
                 $this->getEmail()
             ));
 
-        $result = json_decode($response);
+        $result = json_decode((string) $response->getBody());
 
         if(isset($result->success) && $result->success) {
             if(isset($result->email->appears) && $result->email->appears) {
@@ -142,10 +160,40 @@ class StopForumSpam
                 $this->getIp()
             ));
 
+        $result = json_decode((string) $response->getBody());
+
         if(isset($result->success) && $result->success) {
             if(isset($result->ip->appears) && $result->ip->appears) {
                 if($result->ip->frequency >= $this->getFrequency()) {
                     event(new \nickurt\StopForumSpam\Events\IsSpamIp($ip));
+
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSpamUsername()
+    {
+        $response = $this->getResponseData(
+            sprintf('%s?username=%s&json',
+                $this->getApiUrl(),
+                $this->getIp()
+            ));
+
+        $result = json_decode((string) $response->getBody());
+
+        if(isset($result->success) && $result->success) {
+            if(isset($result->username->appears) && $result->username->appears) {
+                if($result->username->frequency >= $this->getFrequency()) {
+                    event(new \nickurt\StopForumSpam\Events\IsSpamUsername($username));
 
                     return true;
                 }
@@ -163,18 +211,6 @@ class StopForumSpam
      */
     protected function getResponseData($url)
     {
-        $client = new Client();
-        $requestOption = $this->getRequestOption();
-        $request = $client->get($url, [$requestOption => $this->toArray()]);
-
-        return $request;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getRequestOption()
-    {
-        return (version_compare(\GuzzleHttp\ClientInterface::VERSION, '6.0.0', '<')) ? 'body' : 'form_params';
+        return (new Client())->get($url);
     }
 }

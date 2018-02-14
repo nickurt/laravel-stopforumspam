@@ -42,13 +42,56 @@ $validator = validator()->make(['sfs' => 'sfs'], ['sfs' => [new \nickurt\StopFor
 )]]);
 ```
 The `IsSpamIp` requires a `ip` and an optional `frequency` parameter to validate the request.
-
+#### Validation Rule - IsSpamUsername
+You can use a hidden-field `sfs` in your Form-Request to validate if the request is valid
+```php
+$validator = validator()->make(['sfs' => 'sfs'], ['sfs' => [new \nickurt\StopForumSpam\Rules\IsSpamUsername(
+    request()->input('username'), 100
+)]]);
+```
+The `IsSpamUsername` requires a `username` and an optional `frequency` parameter to validate the request.
+#### Manually Usage - IsSpamEmail
+```php
+$isSpamEmail = (new \nickurt\StopForumSpam\StopForumSpam())
+	->setEmail('nickurt@users.noreply.github.com')
+	->isSpamEmail();
+	
+// ...	
+$isSpamEmail = stopforumspam()
+    ->setEmail('nickurt@users.noreply.github.com)
+    ->isSpamEmail();
+```
+#### Manually Usage - IsSpamIp
+```php
+$isSpamIp = (new \nickurt\StopForumSpam\StopForumSpam())
+	->setIp('8.8.8.8')
+	->isSpamIp();
+	
+// ...	
+$isSpamIp = stopforumspam()
+    ->setIp('8.8.8.8')
+    ->isSpamIp();
+```
+#### Manually Usage - IsSpamUsername
+```php
+$isSpamUsername = (new \nickurt\StopForumSpam\StopForumSpam())
+	->setUsername('nickurt')
+	->isSpamUsername();
+	
+// ...	
+$isSpamUsername = stopforumspam()
+    ->setUsername('nickurt')
+    ->isSpamUsername();
+```
 #### Events
-You can listen to the `IsSpamEmail` and `IsSpamIp` events, e.g. if you want to log all the `IsSpam`-requests in your application
+You can listen to the `IsSpamEmail`, `IsSpamIp` and `IsSpamUsername` events, e.g. if you want to log all the `IsSpam`-requests in your application
 ##### IsSpamEmail Event
 This event will be fired when the request-email is above the frequency of sending spam
 `nickurt\StopForumSpam\Events\IsSpamEmail`
 ##### IsSpamIp Event
 This event will be fired when the request-ip is above the frequency of sending spam
-`nickurt\StopForumSpam\Events\ReportSpam`
+`nickurt\StopForumSpam\Events\IsSpamIp`
+##### IsSpamUsername Event
+This event will be fired when the request-ip is above the frequency of sending spam
+`nickurt\StopForumSpam\Events\IsSpamUsername`
 - - - 

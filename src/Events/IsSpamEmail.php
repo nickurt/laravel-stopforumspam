@@ -10,7 +10,7 @@ class IsSpamEmail
     public $email;
 
     /**
-     * IsSpam constructor.
+     * IsSpamEmail constructor.
      * @param $email
      */
     public function __construct($email)

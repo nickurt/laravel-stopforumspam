@@ -4,12 +4,12 @@ namespace nickurt\StopForumSpam\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 
-class IsSpamIp implements Rule
+class IsSpamUsername implements Rule
 {
     /**
      * @var
      */
-    protected $ip;
+    protected $username;
 
     /**
      * @var
@@ -19,14 +19,14 @@ class IsSpamIp implements Rule
     /**
      * Create a new rule instance.
      *
-     * @param $ip
+     * @param $username
      * @param $frequency
      *
      * @return void
      */
-    public function __construct($ip, $frequency = 10)
+    public function __construct($username, $frequency = 10)
     {
-        $this->ip = $ip;
+        $this->username = $username;
         $this->frequency = $frequency;
     }
 
@@ -40,10 +40,10 @@ class IsSpamIp implements Rule
     public function passes($attribute, $value)
     {
         $sfs = (new \nickurt\StopForumspam\StopForumSpam())
-            ->setIp($this->ip)
+            ->setUsername($this->username)
             ->setFrequency($this->frequency);
 
-        return $sfs->isSpamIp() ? false : true;
+        return $sfs->isSpamUsername() ? false : true;
     }
 
     /**

@@ -39,9 +39,9 @@ class IsSpamEmail implements Rule
      */
     public function passes($attribute, $value)
     {
-        $sfs = stopforumspam();
-        $sfs->setEmail($this->email);
-        $sfs->setFrequence($this->frequence);
+        $sfs = (new \nickurt\StopForumSpam\StopForumSpam())
+            ->setEmail($this->email)
+            ->setFrequency($this->frequency);
 
         return $sfs->isSpamEmail() ? false : true;
     }
