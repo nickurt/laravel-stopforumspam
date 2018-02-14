@@ -58,7 +58,7 @@ $isSpamEmail = (new \nickurt\StopForumSpam\StopForumSpam())
 	
 // ...	
 $isSpamEmail = stopforumspam()
-    ->setEmail('nickurt@users.noreply.github.com)
+    ->setEmail('nickurt@users.noreply.github.com')
     ->isSpamEmail();
 ```
 #### Manually Usage - IsSpamIp
