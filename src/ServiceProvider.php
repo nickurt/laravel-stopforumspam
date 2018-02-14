@@ -19,9 +19,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
     public function register()
     {
         $this->app->singleton('nickurt\StopForumSpam\StopForumSpam', function ($app) {
-            $sfs = new StopForumSpam;
-
-            return $sfs;
+            return new StopForumSpam;
         });
 
         $this->app->alias('nickurt\StopForumSpam\StopForumSpam', 'StopForumSpam');
