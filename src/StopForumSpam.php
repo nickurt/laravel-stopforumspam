@@ -165,7 +165,7 @@ class StopForumSpam
         if(isset($result->success) && $result->success) {
             if(isset($result->ip->appears) && $result->ip->appears) {
                 if($result->ip->frequency >= $this->getFrequency()) {
-                    event(new \nickurt\StopForumSpam\Events\IsSpamIp($ip));
+                    event(new \nickurt\StopForumSpam\Events\IsSpamIp($this->getIp()));
 
                     return true;
                 }
@@ -185,7 +185,7 @@ class StopForumSpam
         $response = $this->getResponseData(
             sprintf('%s?username=%s&json',
                 $this->getApiUrl(),
-                $this->getIp()
+                $this->getUsername()
             ));
 
         $result = json_decode((string) $response->getBody());
@@ -193,7 +193,7 @@ class StopForumSpam
         if(isset($result->success) && $result->success) {
             if(isset($result->username->appears) && $result->username->appears) {
                 if($result->username->frequency >= $this->getFrequency()) {
-                    event(new \nickurt\StopForumSpam\Events\IsSpamUsername($username));
+                    event(new \nickurt\StopForumSpam\Events\IsSpamUsername($this->getUsername()));
 
                     return true;
                 }

@@ -39,7 +39,7 @@ class IsSpamUsername implements Rule
      */
     public function passes($attribute, $value)
     {
-        $sfs = (new \nickurt\StopForumspam\StopForumSpam())
+        $sfs = (new \nickurt\StopForumSpam\StopForumSpam())
             ->setUsername($this->username)
             ->setFrequency($this->frequency);
 

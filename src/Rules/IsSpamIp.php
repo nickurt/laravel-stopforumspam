@@ -39,7 +39,7 @@ class IsSpamIp implements Rule
      */
     public function passes($attribute, $value)
     {
-        $sfs = (new \nickurt\StopForumspam\StopForumSpam())
+        $sfs = (new \nickurt\StopForumSpam\StopForumSpam())
             ->setIp($this->ip)
             ->setFrequency($this->frequency);
 
