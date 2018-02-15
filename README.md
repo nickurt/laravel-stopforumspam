@@ -18,7 +18,7 @@ and the facade in the file
 'StopForumSpam' => 'nickurt\StopForumSpam\Facade',
 ```
 
-Copy the config files for the api
+Copy the config files for the StopForumSpam-plugin
 
 ```
 php artisan vendor:publish --provider="nickurt\StopForumSpam\ServiceProvider" --tag="config"
@@ -92,6 +92,10 @@ This event will be fired when the request-email is above the frequency of sendin
 This event will be fired when the request-ip is above the frequency of sending spam
 `nickurt\StopForumSpam\Events\IsSpamIp`
 ##### IsSpamUsername Event
-This event will be fired when the request-ip is above the frequency of sending spam
+This event will be fired when the request-username is above the frequency of sending spam
 `nickurt\StopForumSpam\Events\IsSpamUsername`
+### Tests
+```sh
+phpunit
+```
 - - - 
