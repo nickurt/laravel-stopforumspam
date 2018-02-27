@@ -25,6 +25,11 @@ class StopForumSpam
     /**
      * @var
      */
+    protected $username;
+
+    /**
+     * @var
+     */
     protected $frequency = 10;
 
     /**
