@@ -129,15 +129,17 @@ class StopForumSpam
     /**
      * @return bool
      */
-    public function IsSpamEmail()
+    public function isSpamEmail()
     {
-        $response = $this->getResponseData(
-            sprintf('%s?email=%s&json',
-                $this->getApiUrl(),
-                $this->getEmail()
-            ));
+        $result = cache()->remember('laravel-stopforumspam-'.str_slug($this->getEmail()), 10, function () {
+            $response = $this->getResponseData(
+                sprintf('%s?email=%s&json',
+                    $this->getApiUrl(),
+                    $this->getEmail()
+                ));
 
-        $result = json_decode((string) $response->getBody());
+            return json_decode((string) $response->getBody());
+        });
 
         if(isset($result->success) && $result->success) {
             if(isset($result->email->appears) && $result->email->appears) {
@@ -157,15 +159,17 @@ class StopForumSpam
     /**
      * @return bool
      */
-    public function IsSpamIp()
+    public function isSpamIp()
     {
-        $response = $this->getResponseData(
-            sprintf('%s?ip=%s&json',
-                $this->getApiUrl(),
-                $this->getIp()
-            ));
+        $result = cache()->remember('laravel-stopforumspam-'.str_slug($this->getIp()), 10, function () {
+            $response = $this->getResponseData(
+                sprintf('%s?ip=%s&json',
+                    $this->getApiUrl(),
+                    $this->getIp()
+                ));
 
-        $result = json_decode((string) $response->getBody());
+            return json_decode((string) $response->getBody());
+        });
 
         if(isset($result->success) && $result->success) {
             if(isset($result->ip->appears) && $result->ip->appears) {
@@ -187,13 +191,15 @@ class StopForumSpam
      */
     public function isSpamUsername()
     {
-        $response = $this->getResponseData(
-            sprintf('%s?username=%s&json',
-                $this->getApiUrl(),
-                $this->getUsername()
-            ));
+        $result = cache()->remember('laravel-stopforumspam-'.str_slug($this->getUsername()), 10, function () {
+            $response = $this->getResponseData(
+                sprintf('%s?username=%s&json',
+                    $this->getApiUrl(),
+                    $this->getUsername()
+                ));
 
-        $result = json_decode((string) $response->getBody());
+            return json_decode((string) $response->getBody());
+        });
 
         if(isset($result->success) && $result->success) {
             if(isset($result->username->appears) && $result->username->appears) {
