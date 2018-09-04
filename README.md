@@ -3,7 +3,7 @@
 ### Installation
 Install this package with composer:
 ```
-php composer.phar require nickurt/laravel-stopforumspam:1.*
+composer require nickurt/laravel-stopforumspam
 ```
 
 Add the provider to config/app.php file
