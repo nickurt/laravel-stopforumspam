@@ -5,11 +5,28 @@ namespace nickurt\StopForumSpam;
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
     /**
-     * Indicates if loading of the provider is deferred.
+     * Bootstrap the application events.
      *
-     * @var bool
+     * @return void
      */
-    protected $defer = false;
+    public function boot()
+    {
+        $this->loadTranslationsFrom(__DIR__ . '/../src/Resources/Lang', 'stopforumspam');
+
+        $this->publishes([
+            __DIR__ . '/../src/Resources/Lang' => resource_path('lang/vendor/stopforumspam'),
+        ], 'config');
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return ['nickurt\StopForumSpam\StopForumSpam', 'StopForumSpam'];
+    }
 
     /**
      * Register the service provider.
@@ -23,29 +40,5 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         });
 
         $this->app->alias('nickurt\StopForumSpam\StopForumSpam', 'StopForumSpam');
-    }
-
-    /**
-     * Bootstrap the application events.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        $this->loadTranslationsFrom(__DIR__.'/../src/Resources/Lang', 'stopforumspam');
-
-        $this->publishes([
-            __DIR__.'/../src/Resources/Lang' => resource_path('lang/vendor/stopforumspam'),
-        ], 'config');
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return ['nickurt\StopForumSpam\StopForumSpam', 'StopForumSpam'];
     }
 }

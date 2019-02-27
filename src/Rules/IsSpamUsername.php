@@ -31,10 +31,20 @@ class IsSpamUsername implements Rule
     }
 
     /**
+     * Get the validation error message.
+     *
+     * @return string
+     */
+    public function message()
+    {
+        return trans('stopforumspam::stopforumspam.it_is_currently_not_possible_to_register_with_your_specified_information_please_try_later_again');
+    }
+
+    /**
      * Determine if the validation rule passes.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
+     * @param  string $attribute
+     * @param  mixed $value
      * @return bool
      */
     public function passes($attribute, $value)
@@ -44,15 +54,5 @@ class IsSpamUsername implements Rule
             ->setFrequency($this->frequency);
 
         return $sfs->isSpamUsername() ? false : true;
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message()
-    {
-        return trans('stopforumspam::stopforumspam.it_is_currently_not_possible_to_register_with_your_specified_information_please_try_later_again');
     }
 }

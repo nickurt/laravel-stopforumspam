@@ -39,14 +39,6 @@ class StopForumSpamTest extends TestCase
     }
 
     /** @test */
-    public function it_can_work_with_helper()
-    {
-        $this->assertTrue(function_exists('stopforumspam'));
-
-        $this->assertInstanceOf(\nickurt\StopForumSpam\StopForumSpam::class, stopforumspam());
-    }
-
-    /** @test */
     public function it_can_work_with_container()
     {
         $this->assertInstanceOf(\nickurt\StopForumSpam\StopForumSpam::class, $this->app['StopForumSpam']);
@@ -65,48 +57,11 @@ class StopForumSpamTest extends TestCase
     }
 
     /** @test */
-    public function it_will_work_with_validation_rule_is_spam_ip()
+    public function it_can_work_with_helper()
     {
-        $val1 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamIp('185.38.14.171', 10)]]);
+        $this->assertTrue(function_exists('stopforumspam'));
 
-        $this->assertFalse($val1->passes());
-        $this->assertSame(1, count($val1->messages()->get('sfs')));
-        $this->assertSame('It is currently not possible to register with your specified information, please try later again', $val1->messages()->first('sfs'));
-
-        $val2 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamIp('185.38.14.171', 50000)]]);
-
-        $this->assertTrue($val2->passes());
-        $this->assertSame(0, count($val2->messages()->get('sfs')));
-    }
-
-    /** @test */
-    public function it_will_work_with_validation_rule_is_spam_username()
-    {
-        $val1 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamUsername('viagra', 10)]]);
-
-        $this->assertFalse($val1->passes());
-        $this->assertSame(1, count($val1->messages()->get('sfs')));
-        $this->assertSame('It is currently not possible to register with your specified information, please try later again', $val1->messages()->first('sfs'));
-
-        $val2 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamUsername('viagra', 50000)]]);
-
-        $this->assertTrue($val2->passes());
-        $this->assertSame(0, count($val2->messages()->get('sfs')));
-    }
-
-    /** @test */
-    public function it_will_work_with_validation_rule_is_spam_email()
-    {
-        $val1 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamEmail('xrumertest@this.baddomain.com', 10)]]);
-
-        $this->assertFalse($val1->passes());
-        $this->assertSame(1, count($val1->messages()->get('sfs')));
-        $this->assertSame('It is currently not possible to register with your specified information, please try later again', $val1->messages()->first('sfs'));
-
-        $val2 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamEmail('xrumertest@this.baddomain.com', 50000)]]);
-
-        $this->assertTrue($val2->passes());
-        $this->assertSame(0, count($val2->messages()->get('sfs')));
+        $this->assertInstanceOf(\nickurt\StopForumSpam\StopForumSpam::class, stopforumspam());
     }
 
     /** @test */
@@ -118,19 +73,19 @@ class StopForumSpamTest extends TestCase
 
         $isSpamIp = $sfs->setIp('185.38.14.171')->isSpamIp();
 
-        Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamIp::class, function($e) use ($sfs) {
+        Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamIp::class, function ($e) use ($sfs) {
             return $e->ip === $sfs->getIp();
         });
 
-        $isSpamUsername = $sfs->setUsername('viagra')->isSpamUsername();
+        $isSpamUsername = $sfs->setUsername('viagra')->setFrequency(5)->isSpamUsername();
 
-        Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamUsername::class, function($e) use ($sfs) {
+        Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamUsername::class, function ($e) use ($sfs) {
             return $e->username === $sfs->getUsername();
         });
 
         $isSpamEmail = $sfs->setEmail('xrumertest@this.baddomain.com')->isSpamEmail();
 
-        Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamEmail::class, function($e) use ($sfs) {
+        Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamEmail::class, function ($e) use ($sfs) {
             return $e->email === $sfs->getEmail();
         });
     }
@@ -154,7 +109,7 @@ class StopForumSpamTest extends TestCase
 
         Event::assertNotDispatched(\nickurt\StopForumSpam\Events\IsSpamEmail::class);
     }
-    
+
     /**
      * @test
      * @expectedException \nickurt\StopForumSpam\Exception\MalformedURLException
@@ -163,6 +118,51 @@ class StopForumSpamTest extends TestCase
     {
         $sfs = (new \nickurt\StopForumSpam\StopForumSpam())
             ->setApiUrl('malformed_url');
+    }
+
+    /** @test */
+    public function it_will_work_with_validation_rule_is_spam_email()
+    {
+        $val1 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamEmail('xrumertest@this.baddomain.com', 10)]]);
+
+        $this->assertFalse($val1->passes());
+        $this->assertSame(1, count($val1->messages()->get('sfs')));
+        $this->assertSame('It is currently not possible to register with your specified information, please try later again', $val1->messages()->first('sfs'));
+
+        $val2 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamEmail('xrumertest@this.baddomain.com', 50000)]]);
+
+        $this->assertTrue($val2->passes());
+        $this->assertSame(0, count($val2->messages()->get('sfs')));
+    }
+
+    /** @test */
+    public function it_will_work_with_validation_rule_is_spam_ip()
+    {
+        $val1 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamIp('185.38.14.171', 10)]]);
+
+        $this->assertFalse($val1->passes());
+        $this->assertSame(1, count($val1->messages()->get('sfs')));
+        $this->assertSame('It is currently not possible to register with your specified information, please try later again', $val1->messages()->first('sfs'));
+
+        $val2 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamIp('185.38.14.171', 50000)]]);
+
+        $this->assertTrue($val2->passes());
+        $this->assertSame(0, count($val2->messages()->get('sfs')));
+    }
+
+    /** @test */
+    public function it_will_work_with_validation_rule_is_spam_username()
+    {
+        $val1 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamUsername('viagra', 5)]]);
+
+        $this->assertFalse($val1->passes());
+        $this->assertSame(1, count($val1->messages()->get('sfs')));
+        $this->assertSame('It is currently not possible to register with your specified information, please try later again', $val1->messages()->first('sfs'));
+
+        $val2 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamUsername('viagra', 50000)]]);
+
+        $this->assertTrue($val2->passes());
+        $this->assertSame(0, count($val2->messages()->get('sfs')));
     }
 
     /**

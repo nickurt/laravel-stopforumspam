@@ -57,24 +57,6 @@ class StopForumSpam
     /**
      * @return mixed
      */
-    public function getIp()
-    {
-        return $this->ip;
-    }
-
-    /**
-     * @param $ip
-     * @return $this
-     */
-    public function setIp($ip)
-    {
-        $this->ip = $ip;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getEmail()
     {
         return $this->email;
@@ -87,24 +69,6 @@ class StopForumSpam
     public function setEmail($email)
     {
         $this->email = $email;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param $username
-     * @return $this
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
         return $this;
     }
 
@@ -127,23 +91,59 @@ class StopForumSpam
     }
 
     /**
+     * @return mixed
+     */
+    public function getIp()
+    {
+        return $this->ip;
+    }
+
+    /**
+     * @param $ip
+     * @return $this
+     */
+    public function setIp($ip)
+    {
+        $this->ip = $ip;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param $username
+     * @return $this
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isSpamEmail()
     {
-        $result = cache()->remember('laravel-stopforumspam-'.str_slug($this->getEmail()), 10, function () {
+        $result = cache()->remember('laravel-stopforumspam-' . str_slug($this->getEmail()), 10, function () {
             $response = $this->getResponseData(
                 sprintf('%s?email=%s&json',
                     $this->getApiUrl(),
                     $this->getEmail()
                 ));
 
-            return json_decode((string) $response->getBody());
+            return json_decode((string)$response->getBody());
         });
 
-        if(isset($result->success) && $result->success) {
-            if(isset($result->email->appears) && $result->email->appears) {
-                if($result->email->frequency >= $this->getFrequency()) {
+        if (isset($result->success) && $result->success) {
+            if (isset($result->email->appears) && $result->email->appears) {
+                if ($result->email->frequency >= $this->getFrequency()) {
                     event(new \nickurt\StopForumSpam\Events\IsSpamEmail($this->getEmail()));
 
                     return true;
@@ -161,19 +161,19 @@ class StopForumSpam
      */
     public function isSpamIp()
     {
-        $result = cache()->remember('laravel-stopforumspam-'.str_slug($this->getIp()), 10, function () {
+        $result = cache()->remember('laravel-stopforumspam-' . str_slug($this->getIp()), 10, function () {
             $response = $this->getResponseData(
                 sprintf('%s?ip=%s&json',
                     $this->getApiUrl(),
                     $this->getIp()
                 ));
 
-            return json_decode((string) $response->getBody());
+            return json_decode((string)$response->getBody());
         });
 
-        if(isset($result->success) && $result->success) {
-            if(isset($result->ip->appears) && $result->ip->appears) {
-                if($result->ip->frequency >= $this->getFrequency()) {
+        if (isset($result->success) && $result->success) {
+            if (isset($result->ip->appears) && $result->ip->appears) {
+                if ($result->ip->frequency >= $this->getFrequency()) {
                     event(new \nickurt\StopForumSpam\Events\IsSpamIp($this->getIp()));
 
                     return true;
@@ -191,19 +191,19 @@ class StopForumSpam
      */
     public function isSpamUsername()
     {
-        $result = cache()->remember('laravel-stopforumspam-'.str_slug($this->getUsername()), 10, function () {
+        $result = cache()->remember('laravel-stopforumspam-' . str_slug($this->getUsername()), 10, function () {
             $response = $this->getResponseData(
                 sprintf('%s?username=%s&json',
                     $this->getApiUrl(),
                     $this->getUsername()
                 ));
 
-            return json_decode((string) $response->getBody());
+            return json_decode((string)$response->getBody());
         });
 
-        if(isset($result->success) && $result->success) {
-            if(isset($result->username->appears) && $result->username->appears) {
-                if($result->username->frequency >= $this->getFrequency()) {
+        if (isset($result->success) && $result->success) {
+            if (isset($result->username->appears) && $result->username->appears) {
+                if ($result->username->frequency >= $this->getFrequency()) {
                     event(new \nickurt\StopForumSpam\Events\IsSpamUsername($this->getUsername()));
 
                     return true;
