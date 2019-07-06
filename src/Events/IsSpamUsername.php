@@ -4,14 +4,11 @@ namespace nickurt\StopForumSpam\Events;
 
 class IsSpamUsername
 {
-    /**
-     * @var
-     */
+    /** @var string */
     public $username;
 
     /**
-     * IsSpamUsername constructor.
-     * @param $ip
+     * @param string $username
      */
     public function __construct($username)
     {

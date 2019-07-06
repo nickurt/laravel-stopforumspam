@@ -1,12 +1,17 @@
 ## Laravel StopForumSpam
 
+[![Latest Stable Version](https://poser.pugx.org/nickurt/laravel-stopforumspam/v/stable?format=flat-square)](https://packagist.org/packages/nickurt/laravel-stopforumspam)
+[![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+[![Build Status](https://img.shields.io/travis/nickurt/laravel-stopforumspam/master.svg?style=flat-square)](https://travis-ci.org/nickurt/laravel-stopforumspam)
+[![Total Downloads](https://img.shields.io/packagist/dt/nickurt/laravel-stopforumspam.svg?style=flat-square)](https://packagist.org/packages/nickurt/laravel-stopforumspam)
+
 ### Installation
 Install this package with composer:
 ```
 composer require nickurt/laravel-stopforumspam
 ```
 
-Add the provider to config/app.php file
+Add the provider to `config/app.php` file
 
 ```php
 'nickurt\StopForumSpam\ServiceProvider',
@@ -27,61 +32,65 @@ php artisan vendor:publish --provider="nickurt\StopForumSpam\ServiceProvider" --
 ### Examples
 
 #### Validation Rule - IsSpamEmail
-You can use a hidden-field `sfs` in your Form-Request to validate if the request is valid
 ```php
-$validator = validator()->make(['sfs' => 'sfs'], ['sfs' => [new \nickurt\StopForumSpam\Rules\IsSpamEmail(
-    request()->input('email'), 100
-)]]);
+// FormRequest ...
+
+public function rules()
+{
+    return [
+        'email' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamEmail(20)]
+    ];
+}
+
+// Manually ...
+
+$validator = validator()->make(request()->all(), ['email' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamEmail(20)]]);
 ```
-The `IsSpamEmail` requires a `email` and an optional `frequency` parameter to validate the request.
+
+The `IsSpamEmail`-rule has one optional paramter `frequency` (default 10) to validate the request.
 #### Validation Rule - IsSpamIp
-You can use a hidden-field `sfs` in your Form-Request to validate if the request is valid
 ```php
-$validator = validator()->make(['sfs' => 'sfs'], ['sfs' => [new \nickurt\StopForumSpam\Rules\IsSpamIp(
-    request()->ip(), 100
-)]]);
+// FormRequest ...
+
+public function rules()
+{
+    return [
+        'ip' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamIp(20)]
+    ];
+}
+
+// Manually ...
+
+$validator = validator()->make(request()->all(), ['ip' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamIp(20)]]);
 ```
-The `IsSpamIp` requires a `ip` and an optional `frequency` parameter to validate the request.
+The `IsSpamIp`-rule has one optional paramter `frequency` (default 10) to validate the request.
 #### Validation Rule - IsSpamUsername
-You can use a hidden-field `sfs` in your Form-Request to validate if the request is valid
 ```php
-$validator = validator()->make(['sfs' => 'sfs'], ['sfs' => [new \nickurt\StopForumSpam\Rules\IsSpamUsername(
-    request()->input('username'), 100
-)]]);
+// FormRequest ...
+
+public function rules()
+{
+    return [
+        'username' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamUsername(20)]
+    ];
+}
+
+// Manually ...
+
+$validator = validator()->make(request()->all(), ['username' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamUsername(20)]]);
 ```
-The `IsSpamUsername` requires a `username` and an optional `frequency` parameter to validate the request.
+The `IsSpamUsername`-rule has one optional paramter `frequency` (default 10) to validate the request.
 #### Manually Usage - IsSpamEmail
 ```php
-$isSpamEmail = (new \nickurt\StopForumSpam\StopForumSpam())
-	->setEmail('nickurt@users.noreply.github.com')
-	->isSpamEmail();
-	
-// ...	
-$isSpamEmail = stopforumspam()
-    ->setEmail('nickurt@users.noreply.github.com')
-    ->isSpamEmail();
+\StopForumSpam::setEmail('nickurt@users.noreply.github.com')->isSpamEmail();
 ```
 #### Manually Usage - IsSpamIp
 ```php
-$isSpamIp = (new \nickurt\StopForumSpam\StopForumSpam())
-	->setIp('8.8.8.8')
-	->isSpamIp();
-	
-// ...	
-$isSpamIp = stopforumspam()
-    ->setIp('8.8.8.8')
-    ->isSpamIp();
+\StopForumSpam::setIp('8.8.8.8')->isSpamIp();
 ```
 #### Manually Usage - IsSpamUsername
 ```php
-$isSpamUsername = (new \nickurt\StopForumSpam\StopForumSpam())
-	->setUsername('nickurt')
-	->isSpamUsername();
-	
-// ...	
-$isSpamUsername = stopforumspam()
-    ->setUsername('nickurt')
-    ->isSpamUsername();
+\StopForumSpam::setUsername('nickurt')->isSpamUsername();
 ```
 #### Events
 You can listen to the `IsSpamEmail`, `IsSpamIp` and `IsSpamUsername` events, e.g. if you want to log all the `IsSpam`-requests in your application
@@ -96,6 +105,6 @@ This event will be fired when the request-username is above the frequency of sen
 `nickurt\StopForumSpam\Events\IsSpamUsername`
 ### Tests
 ```sh
-phpunit
+composer test
 ```
 - - - 

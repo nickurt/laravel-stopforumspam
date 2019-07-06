@@ -3,128 +3,25 @@
 namespace nickurt\StopForumSpam;
 
 use \GuzzleHttp\Client;
+use nickurt\PwnedPasswords\PwnedPasswords;
 use \nickurt\StopForumSpam\Exception\MalformedURLException;
 
 class StopForumSpam
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $apiUrl = 'https://api.stopforumspam.org/api';
 
-    /**
-     * @var
-     */
-    protected $ip;
-
-    /**
-     * @var
-     */
+    /** @var string */
     protected $email;
 
-    /**
-     * @var
-     */
-    protected $username;
-
-    /**
-     * @var
-     */
+    /** @var int */
     protected $frequency = 10;
 
-    /**
-     * @return string
-     */
-    public function getApiUrl()
-    {
-        return $this->apiUrl;
-    }
+    /** @var string */
+    protected $ip;
 
-    /**
-     * @param $apiUrl
-     * @return $this
-     */
-    public function setApiUrl($apiUrl)
-    {
-        if (filter_var($apiUrl, FILTER_VALIDATE_URL) === false) {
-            throw new MalformedURLException();
-        }
-
-        $this->apiUrl = $apiUrl;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param $email
-     * @return $this
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getFrequency()
-    {
-        return $this->frequency;
-    }
-
-    /**
-     * @param $frequency
-     * @return $this
-     */
-    public function setFrequency($frequency)
-    {
-        $this->frequency = $frequency;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getIp()
-    {
-        return $this->ip;
-    }
-
-    /**
-     * @param $ip
-     * @return $this
-     */
-    public function setIp($ip)
-    {
-        $this->ip = $ip;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param $username
-     * @return $this
-     */
-    public function setUsername($username)
-    {
-        $this->username = $username;
-        return $this;
-    }
+    /** @var string */
+    protected $username;
 
     /**
      * @return bool
@@ -148,8 +45,6 @@ class StopForumSpam
 
                     return true;
                 }
-
-                return false;
             }
         }
 
@@ -157,7 +52,103 @@ class StopForumSpam
     }
 
     /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param string $email
+     * @return $this
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @param string $url
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    protected function getResponseData($url)
+    {
+        return $this->getClient()->get($url);
+    }
+
+    /**
+     * @return string
+     */
+    public function getApiUrl()
+    {
+        return $this->apiUrl;
+    }
+
+    /**
+     * @return Client
+     */
+    public function getClient()
+    {
+        if (!isset($this->client)) {
+            $this->client = new \GuzzleHttp\Client();
+
+            return $this->client;
+        }
+
+        return $this->client;
+    }
+
+    /**
+     * @param $client
+     * @return $this
+     */
+    public function setClient($client)
+    {
+        $this->client = $client;
+
+        return $this;
+    }
+
+    /**
+     * @param string $apiUrl
+     * @return $this
+     */
+    public function setApiUrl($apiUrl)
+    {
+        if (filter_var($apiUrl, FILTER_VALIDATE_URL) === false) {
+            throw new MalformedURLException();
+        }
+
+        $this->apiUrl = $apiUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFrequency()
+    {
+        return $this->frequency;
+    }
+
+    /**
+     * @param int $frequency
+     * @return $this
+     */
+    public function setFrequency($frequency)
+    {
+        $this->frequency = $frequency;
+
+        return $this;
+    }
+
+    /**
      * @return bool
+     * @throws \Exception
      */
     public function isSpamIp()
     {
@@ -178,8 +169,6 @@ class StopForumSpam
 
                     return true;
                 }
-
-                return false;
             }
         }
 
@@ -187,7 +176,27 @@ class StopForumSpam
     }
 
     /**
+     * @return string
+     */
+    public function getIp()
+    {
+        return $this->ip;
+    }
+
+    /**
+     * @param string $ip
+     * @return $this
+     */
+    public function setIp($ip)
+    {
+        $this->ip = $ip;
+
+        return $this;
+    }
+
+    /**
      * @return bool
+     * @throws \Exception
      */
     public function isSpamUsername()
     {
@@ -208,8 +217,6 @@ class StopForumSpam
 
                     return true;
                 }
-
-                return false;
             }
         }
 
@@ -217,11 +224,21 @@ class StopForumSpam
     }
 
     /**
-     * @param $url
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return string
      */
-    protected function getResponseData($url)
+    public function getUsername()
     {
-        return (new Client())->get($url);
+        return $this->username;
+    }
+
+    /**
+     * @param string $username
+     * @return $this
+     */
+    public function setUsername($username)
+    {
+        $this->username = $username;
+
+        return $this;
     }
 }

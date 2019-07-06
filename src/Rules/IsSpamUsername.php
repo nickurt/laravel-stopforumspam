@@ -6,27 +6,14 @@ use Illuminate\Contracts\Validation\Rule;
 
 class IsSpamUsername implements Rule
 {
-    /**
-     * @var
-     */
-    protected $username;
-
-    /**
-     * @var
-     */
+    /** @var int */
     protected $frequency;
 
     /**
-     * Create a new rule instance.
-     *
-     * @param $username
-     * @param $frequency
-     *
-     * @return void
+     * @param int $frequency
      */
-    public function __construct($username, $frequency = 10)
+    public function __construct($frequency = 10)
     {
-        $this->username = $username;
         $this->frequency = $frequency;
     }
 
@@ -41,17 +28,15 @@ class IsSpamUsername implements Rule
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param  string $attribute
-     * @param  mixed $value
+     * @param string $attribute
+     * @param mixed $value
      * @return bool
+     * @throws \Exception
      */
     public function passes($attribute, $value)
     {
-        $sfs = (new \nickurt\StopForumSpam\StopForumSpam())
-            ->setUsername($this->username)
-            ->setFrequency($this->frequency);
+        /** @var \nickurt\StopForumSpam\StopForumSpam $sfs */
+        $sfs = \StopForumSpam::setUsername($value)->setFrequency($this->frequency);
 
         return $sfs->isSpamUsername() ? false : true;
     }

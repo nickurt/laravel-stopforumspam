@@ -6,34 +6,19 @@ use Illuminate\Contracts\Validation\Rule;
 
 class IsSpamEmail implements Rule
 {
-    /**
-     * @var
-     */
-    protected $email;
-
-    /**
-     * @var
-     */
+    /** @var int */
     protected $frequency;
 
     /**
-     * Create a new rule instance.
-     *
-     * @param $email
-     * @param $frequency
-     *
-     * @return void
+     * @param int $frequency
      */
-    public function __construct($email, $frequency = 10)
+    public function __construct($frequency = 10)
     {
-        $this->email = $email;
         $this->frequency = $frequency;
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * @return array|\Illuminate\Contracts\Translation\Translator|string|null
      */
     public function message()
     {
@@ -41,17 +26,14 @@ class IsSpamEmail implements Rule
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param  string $attribute
-     * @param  mixed $value
+     * @param string $attribute
+     * @param mixed $value
      * @return bool
      */
     public function passes($attribute, $value)
     {
-        $sfs = (new \nickurt\StopForumSpam\StopForumSpam())
-            ->setEmail($this->email)
-            ->setFrequency($this->frequency);
+        /** @var \nickurt\StopForumSpam\StopForumSpam $sfs */
+        $sfs = \StopForumSpam::setEmail($value)->setFrequency($this->frequency);
 
         return $sfs->isSpamEmail() ? false : true;
     }

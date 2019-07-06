@@ -4,14 +4,11 @@ namespace nickurt\StopForumSpam\Events;
 
 class IsSpamEmail
 {
-    /**
-     * @var
-     */
+    /** @var string */
     public $email;
 
     /**
-     * IsSpamEmail constructor.
-     * @param $email
+     * @param string $email
      */
     public function __construct($email)
     {

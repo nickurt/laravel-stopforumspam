@@ -6,34 +6,19 @@ use Illuminate\Contracts\Validation\Rule;
 
 class IsSpamIp implements Rule
 {
-    /**
-     * @var
-     */
-    protected $ip;
-
-    /**
-     * @var
-     */
+    /** @var int */
     protected $frequency;
 
     /**
-     * Create a new rule instance.
-     *
-     * @param $ip
-     * @param $frequency
-     *
-     * @return void
+     * @param int $frequency
      */
-    public function __construct($ip, $frequency = 10)
+    public function __construct($frequency = 10)
     {
-        $this->ip = $ip;
         $this->frequency = $frequency;
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * @return array|\Illuminate\Contracts\Translation\Translator|string|null
      */
     public function message()
     {
@@ -41,17 +26,15 @@ class IsSpamIp implements Rule
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param  string $attribute
-     * @param  mixed $value
+     * @param string $attribute
+     * @param mixed $value
      * @return bool
+     * @throws \Exception
      */
     public function passes($attribute, $value)
     {
-        $sfs = (new \nickurt\StopForumSpam\StopForumSpam())
-            ->setIp($this->ip)
-            ->setFrequency($this->frequency);
+        /** @var \nickurt\StopForumSpam\StopForumSpam $sfs */
+        $sfs = \StopForumSpam::setIp($value)->setFrequency($this->frequency);
 
         return $sfs->isSpamIp() ? false : true;
     }

@@ -9,162 +9,6 @@ use Validator;
 
 class StopForumSpamTest extends TestCase
 {
-    /** @test */
-    public function it_can_get_default_values()
-    {
-        $sfs = new \nickurt\StopForumSpam\StopForumSpam();
-
-        $this->assertSame('https://api.stopforumspam.org/api', $sfs->getApiUrl());
-        $this->assertNull($sfs->getIp());
-        $this->assertNull($sfs->getEmail());
-        $this->assertNull($sfs->getUsername());
-        $this->assertSame(10, $sfs->getFrequency());
-    }
-
-    /** @test */
-    public function it_can_set_custom_values()
-    {
-        $sfs = (new \nickurt\StopForumSpam\StopForumSpam())
-            ->setApiUrl('https://internal.api.stopforumspam.org/api')
-            ->setIp('185.38.14.171')
-            ->setEmail('xrumertest@this.baddomain.com')
-            ->setUsername('viagra')
-            ->setFrequency(100);
-
-        $this->assertSame('https://internal.api.stopforumspam.org/api', $sfs->getApiUrl());
-        $this->assertSame('185.38.14.171', $sfs->getIp());
-        $this->assertSame('xrumertest@this.baddomain.com', $sfs->getEmail());
-        $this->assertSame('viagra', $sfs->getUsername());
-        $this->assertSame(100, $sfs->getFrequency());
-    }
-
-    /** @test */
-    public function it_can_work_with_container()
-    {
-        $this->assertInstanceOf(\nickurt\StopForumSpam\StopForumSpam::class, $this->app['StopForumSpam']);
-    }
-
-    /** @test */
-    public function it_can_work_with_facade()
-    {
-        $this->assertSame('nickurt\StopForumSpam\Facade', (new \ReflectionClass(StopForumSpam::class))->getName());
-
-        $this->assertSame('https://api.stopforumspam.org/api', StopForumSpam::getApiUrl());
-        $this->assertNull(StopForumSpam::getIp());
-        $this->assertNull(StopForumSpam::getEmail());
-        $this->assertNull(StopForumSpam::getUsername());
-        $this->assertSame(10, StopForumSpam::getFrequency());
-    }
-
-    /** @test */
-    public function it_can_work_with_helper()
-    {
-        $this->assertTrue(function_exists('stopforumspam'));
-
-        $this->assertInstanceOf(\nickurt\StopForumSpam\StopForumSpam::class, stopforumspam());
-    }
-
-    /** @test */
-    public function it_will_fire_an_event_by_valid_spam()
-    {
-        Event::fake();
-
-        $sfs = (new \nickurt\StopForumSpam\StopForumSpam());
-
-        $isSpamIp = $sfs->setIp('185.38.14.171')->isSpamIp();
-
-        Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamIp::class, function ($e) use ($sfs) {
-            return $e->ip === $sfs->getIp();
-        });
-
-        $isSpamUsername = $sfs->setUsername('viagra')->setFrequency(5)->isSpamUsername();
-
-        Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamUsername::class, function ($e) use ($sfs) {
-            return $e->username === $sfs->getUsername();
-        });
-
-        $isSpamEmail = $sfs->setEmail('xrumertest@this.baddomain.com')->isSpamEmail();
-
-        Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamEmail::class, function ($e) use ($sfs) {
-            return $e->email === $sfs->getEmail();
-        });
-    }
-
-    /** @test */
-    public function it_will_not_fire_an_event_by_invalid_spam()
-    {
-        Event::fake();
-
-        $sfs = (new \nickurt\StopForumSpam\StopForumSpam());
-
-        $isSpamIp = $sfs->setIp('185.38.14.171')->setFrequency(50000)->isSpamIp();
-
-        Event::assertNotDispatched(\nickurt\StopForumSpam\Events\IsSpamIp::class);
-
-        $isSpamUsername = $sfs->setUsername('viagra')->setFrequency(50000)->isSpamUsername();
-
-        Event::assertNotDispatched(\nickurt\StopForumSpam\Events\IsSpamUsername::class);
-
-        $isSpamEmail = $sfs->setEmail('xrumertest@this.baddomain.com')->setFrequency(50000)->isSpamEmail();
-
-        Event::assertNotDispatched(\nickurt\StopForumSpam\Events\IsSpamEmail::class);
-    }
-
-    /**
-     * @test
-     * @expectedException \nickurt\StopForumSpam\Exception\MalformedURLException
-     */
-    public function it_will_throw_malformed_url_exception()
-    {
-        $sfs = (new \nickurt\StopForumSpam\StopForumSpam())
-            ->setApiUrl('malformed_url');
-    }
-
-    /** @test */
-    public function it_will_work_with_validation_rule_is_spam_email()
-    {
-        $val1 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamEmail('xrumertest@this.baddomain.com', 10)]]);
-
-        $this->assertFalse($val1->passes());
-        $this->assertSame(1, count($val1->messages()->get('sfs')));
-        $this->assertSame('It is currently not possible to register with your specified information, please try later again', $val1->messages()->first('sfs'));
-
-        $val2 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamEmail('xrumertest@this.baddomain.com', 50000)]]);
-
-        $this->assertTrue($val2->passes());
-        $this->assertSame(0, count($val2->messages()->get('sfs')));
-    }
-
-    /** @test */
-    public function it_will_work_with_validation_rule_is_spam_ip()
-    {
-        $val1 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamIp('185.38.14.171', 10)]]);
-
-        $this->assertFalse($val1->passes());
-        $this->assertSame(1, count($val1->messages()->get('sfs')));
-        $this->assertSame('It is currently not possible to register with your specified information, please try later again', $val1->messages()->first('sfs'));
-
-        $val2 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamIp('185.38.14.171', 50000)]]);
-
-        $this->assertTrue($val2->passes());
-        $this->assertSame(0, count($val2->messages()->get('sfs')));
-    }
-
-    /** @test */
-    public function it_will_work_with_validation_rule_is_spam_username()
-    {
-        $val1 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamUsername('viagra', 5)]]);
-
-        $this->assertFalse($val1->passes());
-        $this->assertSame(1, count($val1->messages()->get('sfs')));
-        $this->assertSame('It is currently not possible to register with your specified information, please try later again', $val1->messages()->first('sfs'));
-
-        $val2 = Validator::make(['sfs' => 'sfs'], ['sfs' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamUsername('viagra', 50000)]]);
-
-        $this->assertTrue($val2->passes());
-        $this->assertSame(0, count($val2->messages()->get('sfs')));
-    }
-
     /**
      * @param \Illuminate\Foundation\Application $app
      * @return array
@@ -186,5 +30,286 @@ class StopForumSpamTest extends TestCase
         return [
             \nickurt\StopForumSpam\ServiceProvider::class
         ];
+    }
+
+    /** @test */
+    public function it_can_get_the_http_client()
+    {
+        $this->assertInstanceOf(\GuzzleHttp\Client::class, StopForumSpam::getClient());
+    }
+
+    /** @test */
+    public function it_can_return_the_default_values()
+    {
+        $stopForumSpam = \StopForumSpam::getFacadeRoot();
+
+        $this->assertSame('https://api.stopforumspam.org/api', $stopForumSpam->getApiUrl());
+        $this->assertSame(10, $stopForumSpam->getFrequency());
+    }
+
+    /** @test */
+    public function it_can_set_a_custom_value_for_the_api_url()
+    {
+        $stopForumSpam = \StopForumSpam::setApiUrl('https://api-ppe.stopforumspam.org/api');
+
+        $this->assertSame('https://api-ppe.stopforumspam.org/api', $stopForumSpam->getApiUrl());
+    }
+
+    /** @test */
+    public function it_can_set_a_custom_value_for_the_email()
+    {
+        $stopForumSpam = \StopForumSpam::setEmail('65egadnatl@liam.ur');
+
+        $this->assertSame('65egadnatl@liam.ur', $stopForumSpam->getEmail());
+    }
+
+    /** @test */
+    public function it_can_set_a_custom_value_for_the_frequency()
+    {
+        $stopForumSpam = \StopForumSpam::setFrequency(90);
+
+        $this->assertSame(90, $stopForumSpam->getFrequency());
+    }
+
+    /** @test */
+    public function it_can_set_a_custom_value_for_the_ip()
+    {
+        $stopForumSpam = \StopForumSpam::setIp('191.186.18.61');
+
+        $this->assertSame('191.186.18.61', $stopForumSpam->getIp());
+    }
+
+    /** @test */
+    public function it_can_set_a_custom_value_for_the_username()
+    {
+        $stopForumSpam = \StopForumSpam::setUsername('argaiv');
+
+        $this->assertSame('argaiv', $stopForumSpam->getUsername());
+    }
+
+    /** @test */
+    public function it_can_work_with_app_instance()
+    {
+        $this->assertInstanceOf(\nickurt\StopForumSpam\StopForumSpam::class, app('StopForumSpam'));
+
+        $this->assertInstanceOf(\nickurt\StopForumSpam\StopForumSpam::class, $this->app['StopForumSpam']);
+    }
+
+    /** @test */
+    public function it_can_work_with_helper_function()
+    {
+        $this->assertInstanceOf(\nickurt\StopForumSpam\StopForumSpam::class, stopforumspam());
+    }
+
+    /** @test */
+    public function it_will_fire_is_spam_email_event_by_a_spam_email_via_facade()
+    {
+        \Event::fake();
+
+        \StopForumSpam::setClient(new \GuzzleHttp\Client([
+            'handler' => new \GuzzleHttp\Handler\MockHandler([
+                new \GuzzleHttp\Psr7\Response(200, [], '{"success":1,"email":{"lastseen":"2019-07-05 11:19:21","frequency":37096,"appears":1,"confidence":99.99}}')
+            ]),
+        ]))->setEmail('ltandage56@mail.ru')->isSpamEmail();
+
+        \Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamEmail::class, function ($e) {
+            return ($e->email == 'ltandage56@mail.ru');
+        });
+    }
+
+    /** @test */
+    public function it_will_fire_is_spam_email_event_by_a_spam_email_via_validation_rule()
+    {
+        \Event::fake();
+
+        \StopForumSpam::setClient(new \GuzzleHttp\Client([
+            'handler' => new \GuzzleHttp\Handler\MockHandler([
+                new \GuzzleHttp\Psr7\Response(200, [], '{"success":1,"email":{"lastseen":"2019-07-05 11:19:21","frequency":37096,"appears":1,"confidence":99.99}}')
+            ]),
+        ]));
+
+        $rule = new \nickurt\StopForumSpam\Rules\IsSpamEmail(10);
+
+        $this->assertFalse($rule->passes('email', 'ltandage56@mail.ru'));
+
+        \Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamEmail::class, function ($e) {
+            return ($e->email == 'ltandage56@mail.ru');
+        });
+    }
+
+    /** @test */
+    public function it_will_fire_is_spam_ip_event_by_a_spam_ip_via_facade()
+    {
+        \Event::fake();
+
+        \StopForumSpam::setClient(new \GuzzleHttp\Client([
+            'handler' => new \GuzzleHttp\Handler\MockHandler([
+                new \GuzzleHttp\Psr7\Response(200, [], '{"success":1,"ip":{"lastseen":"2019-07-05 11:23:03","frequency":255,"appears":1,"confidence":99.95,"delegated":"ua","country":"us","asn":36352}}')
+            ]),
+        ]))->setIp('193.201.224.246')->isSpamIp();
+
+        \Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamIp::class, function ($e) {
+            return ($e->ip == '193.201.224.246');
+        });
+    }
+
+    /** @test */
+    public function it_will_fire_is_spam_ip_event_by_a_spam_ip_via_validation_rule()
+    {
+        \Event::fake();
+
+        \StopForumSpam::setClient(new \GuzzleHttp\Client([
+            'handler' => new \GuzzleHttp\Handler\MockHandler([
+                new \GuzzleHttp\Psr7\Response(200, [], '{"success":1,"ip":{"lastseen":"2019-07-05 11:23:03","frequency":255,"appears":1,"confidence":99.95,"delegated":"ua","country":"us","asn":36352}}')
+            ]),
+        ]));
+
+        $rule = new \nickurt\StopForumSpam\Rules\IsSpamIp(10);
+
+        $this->assertFalse($rule->passes('ip', '193.201.224.246'));
+
+        \Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamIp::class, function ($e) {
+            return ($e->ip == '193.201.224.246');
+        });
+    }
+
+    /** @test */
+    public function it_will_fire_is_spam_username_event_by_a_spam_username_via_facade()
+    {
+        \Event::fake();
+
+        \StopForumSpam::setClient(new \GuzzleHttp\Client([
+            'handler' => new \GuzzleHttp\Handler\MockHandler([
+                new \GuzzleHttp\Psr7\Response(200, [], '{"success":1,"username":{"lastseen":"2019-06-03 15:13:16","frequency":15,"appears":1,"confidence":8.04}}')
+            ]),
+        ]))->setUsername('viagra')->isSpamUsername();
+
+        \Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamUsername::class, function ($e) {
+            return ($e->username == 'viagra');
+        });
+    }
+
+    /** @test */
+    public function it_will_fire_is_spam_username_event_by_a_spam_username_via_validation_rule()
+    {
+        \Event::fake();
+
+        \StopForumSpam::setClient(new \GuzzleHttp\Client([
+            'handler' => new \GuzzleHttp\Handler\MockHandler([
+                new \GuzzleHttp\Psr7\Response(200, [], '{"success":1,"username":{"lastseen":"2019-06-03 15:13:16","frequency":15,"appears":1,"confidence":8.04}}')
+            ]),
+        ]));
+
+        $rule = new \nickurt\StopForumSpam\Rules\IsSpamUsername(10);
+
+        $this->assertFalse($rule->passes('username', 'viagra'));
+
+        \Event::assertDispatched(\nickurt\StopForumSpam\Events\IsSpamUsername::class, function ($e) {
+            return ($e->username == 'viagra');
+        });
+    }
+
+    /** @test */
+    public function it_will_not_fire_is_spam_email_event_by_a_non_spam_email_via_facade()
+    {
+        \Event::fake();
+
+        \StopForumSpam::setClient(new \GuzzleHttp\Client([
+            'handler' => new \GuzzleHttp\Handler\MockHandler([
+                new \GuzzleHttp\Psr7\Response(200, [], '{"success":1,"email":{"frequency":0,"appears":0}}')
+            ]),
+        ]))->setEmail('xrumertest@this.baddomain.com')->isSpamEmail();
+
+        \Event::assertNotDispatched(\nickurt\StopForumSpam\Events\IsSpamEmail::class);
+    }
+
+    /** @test */
+    public function it_will_not_fire_is_spam_email_event_by_a_non_spam_email_via_validation_rule()
+    {
+        \Event::fake();
+
+        \StopForumSpam::setClient(new \GuzzleHttp\Client([
+            'handler' => new \GuzzleHttp\Handler\MockHandler([
+                new \GuzzleHttp\Psr7\Response(200, [], '{"success":1,"email":{"frequency":0,"appears":0}}')
+            ]),
+        ]));
+
+        $rule = new \nickurt\StopForumSpam\Rules\IsSpamEmail(10);
+
+        $this->assertTrue($rule->passes('email', 'xrumertest@this.baddomain.com'));
+
+        \Event::assertNotDispatched(\nickurt\StopForumSpam\Events\IsSpamEmail::class);
+    }
+
+    /** @test */
+    public function it_will_not_fire_is_spam_ip_event_by_a_non_spam_ip_via_facade()
+    {
+        \Event::fake();
+
+        \StopForumSpam::setClient(new \GuzzleHttp\Client([
+            'handler' => new \GuzzleHttp\Handler\MockHandler([
+                new \GuzzleHttp\Psr7\Response(200, [], '{"success":1,"ip":{"frequency":0,"appears":0,"country":"us","asn":36352}}')
+            ]),
+        ]))->setIp('191.186.18.61')->isSpamIp();
+
+        \Event::assertNotDispatched(\nickurt\StopForumSpam\Events\IsSpamIp::class);
+    }
+
+    /** @test */
+    public function it_will_not_fire_is_spam_ip_event_by_a_non_spam_ip_via_validation_rule()
+    {
+        \Event::fake();
+
+        \StopForumSpam::setClient(new \GuzzleHttp\Client([
+            'handler' => new \GuzzleHttp\Handler\MockHandler([
+                new \GuzzleHttp\Psr7\Response(200, [], '{"success":1,"ip":{"frequency":0,"appears":0,"country":"us","asn":36352}}')
+            ]),
+        ]));
+
+        $rule = new \nickurt\StopForumSpam\Rules\IsSpamIp(10);
+
+        $this->assertTrue($rule->passes('ip', '191.186.18.61'));
+
+        \Event::assertNotDispatched(\nickurt\StopForumSpam\Events\IsSpamIp::class);
+    }
+
+    /** @test */
+    public function it_will_not_fire_is_spam_username_event_by_a_non_spam_username_via_facade()
+    {
+        \Event::fake();
+
+        \StopForumSpam::setClient(new \GuzzleHttp\Client([
+            'handler' => new \GuzzleHttp\Handler\MockHandler([
+                new \GuzzleHttp\Psr7\Response(200, [], '{"success":1,"username":{"frequency":0,"appears":0}}')
+            ]),
+        ]))->setUsername('stopforumspam')->IsSpamUsername();
+
+        \Event::assertNotDispatched(\nickurt\StopForumSpam\Events\IsSpamUsername::class);
+    }
+
+    /** @test */
+    public function it_will_not_fire_is_spam_username_event_by_a_non_spam_username_via_validation_rule()
+    {
+        \Event::fake();
+
+        \StopForumSpam::setClient(new \GuzzleHttp\Client([
+            'handler' => new \GuzzleHttp\Handler\MockHandler([
+                new \GuzzleHttp\Psr7\Response(200, [], '{"success":1,"username":{"frequency":0,"appears":0}}')
+            ]),
+        ]))->setUsername('stopforumspam')->IsSpamUsername();
+
+        $rule = new \nickurt\StopForumSpam\Rules\IsSpamUsername(10);
+
+        $this->assertTrue($rule->passes('username', 'stopforumspam'));
+
+        \Event::assertNotDispatched(\nickurt\StopForumSpam\Events\IsSpamUsername::class);
+    }
+
+    /** @test */
+    public function it_will_throw_malformed_url_exception()
+    {
+        $this->expectException(\nickurt\StopForumSpam\Exception\MalformedURLException::class);
+
+        \StopForumSpam::setApiUrl('malformed_url');
     }
 }
