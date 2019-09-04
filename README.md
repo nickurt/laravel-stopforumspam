@@ -1,5 +1,4 @@
 ## Laravel StopForumSpam
-
 [![Latest Stable Version](https://poser.pugx.org/nickurt/laravel-stopforumspam/v/stable?format=flat-square)](https://packagist.org/packages/nickurt/laravel-stopforumspam)
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Build Status](https://img.shields.io/travis/nickurt/laravel-stopforumspam/master.svg?style=flat-square)](https://travis-ci.org/nickurt/laravel-stopforumspam)
@@ -10,27 +9,11 @@ Install this package with composer:
 ```
 composer require nickurt/laravel-stopforumspam
 ```
-
-Add the provider to `config/app.php` file
-
-```php
-'nickurt\StopForumSpam\ServiceProvider',
-```
-
-and the facade in the file
-
-```php
-'StopForumSpam' => 'nickurt\StopForumSpam\Facade',
-```
-
 Copy the config files for the StopForumSpam-plugin
-
 ```
 php artisan vendor:publish --provider="nickurt\StopForumSpam\ServiceProvider" --tag="config"
 ```
-
 ### Examples
-
 #### Validation Rule - IsSpamEmail
 ```php
 // FormRequest ...
@@ -46,7 +29,6 @@ public function rules()
 
 $validator = validator()->make(request()->all(), ['email' => ['required', new \nickurt\StopForumSpam\Rules\IsSpamEmail(20)]]);
 ```
-
 The `IsSpamEmail`-rule has one optional paramter `frequency` (default 10) to validate the request.
 #### Validation Rule - IsSpamIp
 ```php
