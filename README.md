@@ -1,8 +1,8 @@
 ## Laravel StopForumSpam
-[![Latest Stable Version](https://poser.pugx.org/nickurt/laravel-stopforumspam/v/stable?format=flat-square)](https://packagist.org/packages/nickurt/laravel-stopforumspam)
-[![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/nickurt/laravel-stopforumspam/master.svg?style=flat-square)](https://travis-ci.org/nickurt/laravel-stopforumspam)
-[![Total Downloads](https://img.shields.io/packagist/dt/nickurt/laravel-stopforumspam.svg?style=flat-square)](https://packagist.org/packages/nickurt/laravel-stopforumspam)
+[![Build Status](https://github.com/nickurt/laravel-stopforumspam/workflows/tests/badge.svg)](https://github.com/nickurt/laravel-stopforumspam/actions)
+[![Total Downloads](https://poser.pugx.org/nickurt/laravel-stopforumspam/d/total.svg)](https://packagist.org/packages/nickurt/laravel-plesk)
+[![Latest Stable Version](https://poser.pugx.org/nickurt/laravel-stopforumspam/v/stable.svg)](https://packagist.org/packages/nickurt/laravel-plesk)
+[![MIT Licensed](https://poser.pugx.org/nickurt/laravel-stopforumspam/license.svg)](LICENSE.md)
 
 ### Installation
 Install this package with composer:
