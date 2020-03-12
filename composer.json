@@ -20,6 +20,11 @@
             "src/helpers.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "nickurt\\StopForumSpam\\tests\\": "tests"
+        }
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
