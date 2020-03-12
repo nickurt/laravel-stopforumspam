@@ -2,11 +2,11 @@
 
 namespace nickurt\StopForumSpam\Tests;
 
-use Event;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Event;
 use nickurt\StopForumSpam\Events\IsSpamEmail;
 use nickurt\StopForumSpam\Events\IsSpamIp;
 use nickurt\StopForumSpam\Events\IsSpamUsername;
@@ -15,7 +15,7 @@ use nickurt\StopForumSpam\Facade;
 use nickurt\StopForumSpam\ServiceProvider;
 use Orchestra\Testbench\TestCase;
 use StopForumSpam;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class StopForumSpamTest extends TestCase
 {
@@ -100,6 +100,30 @@ class StopForumSpamTest extends TestCase
     public function it_can_work_with_helper_function()
     {
         $this->assertInstanceOf(\nickurt\StopForumSpam\StopForumSpam::class, stopforumspam());
+    }
+
+    /** @test */
+    public function it_will_fire_correctly_based_on_frequency_is_spam_email_event_via_facade()
+    {
+        Event::fake();
+
+        $this->stopForumSpam->setClient(new Client([
+            'handler' => new MockHandler([
+                new Response(200, [], '{"success":1,"email":{"lastseen":"2020-03-09 20:39:27","frequency":1,"appears":1,"confidence":18.18}}')
+            ]),
+        ]));
+
+        $this->assertFalse($this->stopForumSpam->setEmail('adelaidaconnelly911@07stees.online')->setFrequency(10)->isSpamEmail());
+        $this->assertSame(10, $this->stopForumSpam->getFrequency());
+        $this->assertSame('adelaidaconnelly911@07stees.online', $this->stopForumSpam->getEmail());
+
+        Event::assertNotDispatched(IsSpamEmail::class);
+
+        $this->assertTrue($this->stopForumSpam->setEmail('adelaidaconnelly911@07stees.online')->setFrequency(0)->isSpamEmail());
+        $this->assertSame(0, $this->stopForumSpam->getFrequency());
+        $this->assertSame('adelaidaconnelly911@07stees.online', $this->stopForumSpam->getEmail());
+
+        Event::assertDispatched(IsSpamEmail::class, 1);
     }
 
     /** @test */
