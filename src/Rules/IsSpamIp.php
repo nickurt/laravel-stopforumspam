@@ -33,9 +33,11 @@ class IsSpamIp implements Rule
      */
     public function passes($attribute, $value)
     {
-        /** @var \nickurt\StopForumSpam\StopForumSpam $sfs */
-        $sfs = \StopForumSpam::setIp($value)->setFrequency($this->frequency);
+        /** @var \nickurt\StopForumSpam\StopForumSpam $stopForumSpam */
+        $stopForumSpam = app('StopForumSpam');
 
-        return $sfs->isSpamIp() ? false : true;
+        $stopForumSpam->setIp($value)->setFrequency($this->frequency);
+
+        return $stopForumSpam->isSpamIp() ? false : true;
     }
 }

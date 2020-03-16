@@ -7,6 +7,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Event;
 use nickurt\StopForumSpam\Events\IsSpamUsername;
+use nickurt\StopForumSpam\Facade as StopForumSpam;
 use nickurt\StopForumSpam\tests\TestCase;
 
 class IsSpamUsernameTest extends TestCase
@@ -16,7 +17,7 @@ class IsSpamUsernameTest extends TestCase
     {
         Event::fake();
 
-        \nickurt\StopForumSpam\Facade::setClient(new Client([
+        StopForumSpam::setClient(new Client([
             'handler' => new MockHandler([
                 new Response(200, [], '{"success":1,"username":{"lastseen":"2020-03-03 15:24:36","frequency":22,"appears":1,"confidence":54.03}}')
             ]),
@@ -39,11 +40,11 @@ class IsSpamUsernameTest extends TestCase
     {
         Event::fake();
 
-        \nickurt\StopForumSpam\Facade::setClient(new Client([
+        StopForumSpam::setClient(new Client([
             'handler' => new MockHandler([
                 new Response(200, [], '{"success":1,"username":{"frequency":0,"appears":0}}')
             ]),
-        ]))->setUsername('stopforumspam')->IsSpamUsername();
+        ]));
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamUsername(10);
 

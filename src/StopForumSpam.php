@@ -4,6 +4,7 @@ namespace nickurt\StopForumSpam;
 
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Str;
 use nickurt\StopForumSpam\Events\IsSpamEmail;
 use nickurt\StopForumSpam\Events\IsSpamIp;
@@ -78,23 +79,21 @@ class StopForumSpam
 
     /**
      * @param string $url
-     * @return ResponseInterface
+     * @return \GuzzleHttp\Promise\PromiseInterface|ResponseInterface|null
      */
     protected function getResponseData($url)
     {
-        return $this->getClient()->get($url);
+        try {
+            $response = $this->getClient()->get($url);
+        } catch (RequestException $e) {
+            return $e->getResponse();
+        }
+
+        return $response;
     }
 
     /**
-     * @return string
-     */
-    public function getApiUrl()
-    {
-        return $this->apiUrl;
-    }
-
-    /**
-     * @return Client
+     * @return \GuzzleHttp\ClientInterface
      */
     public function getClient()
     {
@@ -108,14 +107,11 @@ class StopForumSpam
     }
 
     /**
-     * @param $client
-     * @return $this
+     * @return string
      */
-    public function setClient($client)
+    public function getApiUrl()
     {
-        $this->client = $client;
-
-        return $this;
+        return $this->apiUrl;
     }
 
     /**
@@ -244,6 +240,17 @@ class StopForumSpam
     public function setUsername($username)
     {
         $this->username = $username;
+
+        return $this;
+    }
+
+    /**
+     * @param \GuzzleHttp\ClientInterface $client;
+     * @return $this
+     */
+    public function setClient(\GuzzleHttp\ClientInterface $client)
+    {
+        $this->client = $client;
 
         return $this;
     }

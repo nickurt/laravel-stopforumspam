@@ -29,12 +29,15 @@ class IsSpamEmail implements Rule
      * @param string $attribute
      * @param mixed $value
      * @return bool
+     * @throws \Exception
      */
     public function passes($attribute, $value)
     {
-        /** @var \nickurt\StopForumSpam\StopForumSpam $sfs */
-        $sfs = \StopForumSpam::setEmail($value)->setFrequency($this->frequency);
+        /** @var \nickurt\StopForumSpam\StopForumSpam $stopForumSpam */
+        $stopForumSpam = app('StopForumSpam');
 
-        return $sfs->isSpamEmail() ? false : true;
+        $stopForumSpam->setEmail($value)->setFrequency($this->frequency);
+
+        return $stopForumSpam->isSpamEmail() ? false : true;
     }
 }

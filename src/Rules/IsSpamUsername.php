@@ -35,9 +35,11 @@ class IsSpamUsername implements Rule
      */
     public function passes($attribute, $value)
     {
-        /** @var \nickurt\StopForumSpam\StopForumSpam $sfs */
-        $sfs = \StopForumSpam::setUsername($value)->setFrequency($this->frequency);
+        /** @var \nickurt\StopForumSpam\StopForumSpam $stopForumSpam */
+        $stopForumSpam = app('StopForumSpam');
 
-        return $sfs->isSpamUsername() ? false : true;
+        $stopForumSpam->setUsername($value)->setFrequency($this->frequency);
+
+        return $stopForumSpam->isSpamUsername() ? false : true;
     }
 }

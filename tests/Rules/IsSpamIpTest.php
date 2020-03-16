@@ -7,6 +7,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Event;
 use nickurt\StopForumSpam\Events\IsSpamIp;
+use nickurt\StopForumSpam\Facade as StopForumSpam;
 use nickurt\StopForumSpam\tests\TestCase;
 
 class IsSpamIpTest extends TestCase
@@ -16,7 +17,7 @@ class IsSpamIpTest extends TestCase
     {
         Event::fake();
 
-        \nickurt\StopForumSpam\Facade::setClient(new Client([
+        StopForumSpam::setClient(new Client([
             'handler' => new MockHandler([
                 new Response(200, [], '{"success":1,"ip":{"lastseen":"2020-03-12 20:17:51","frequency":255,"appears":1,"confidence":99.95,"delegated":"ua","country":"ua","asn":null}}')
             ]),
@@ -39,7 +40,7 @@ class IsSpamIpTest extends TestCase
     {
         Event::fake();
 
-        \nickurt\StopForumSpam\Facade::setClient(new Client([
+        StopForumSpam::setClient(new Client([
             'handler' => new MockHandler([
                 new Response(200, [], '{"success":1,"ip":{"frequency":0,"appears":0,"country":"br","asn":28573}}')
             ]),

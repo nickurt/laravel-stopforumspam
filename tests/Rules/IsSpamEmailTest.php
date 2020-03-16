@@ -8,6 +8,7 @@ use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Event;
 use nickurt\StopForumSpam\Events\IsSpamEmail;
 use nickurt\StopForumSpam\tests\TestCase;
+use nickurt\StopForumSpam\Facade as StopForumSpam;
 
 class IsSpamEmailTest extends TestCase
 {
@@ -16,7 +17,7 @@ class IsSpamEmailTest extends TestCase
     {
         Event::fake();
 
-        \nickurt\StopForumSpam\Facade::setClient(new Client([
+        StopForumSpam::setClient(new Client([
             'handler' => new MockHandler([
                 new Response(200, [], '{"success":1,"email":{"lastseen":"2019-11-01 14:52:36","frequency":24346,"appears":1,"confidence":97.79}}')
             ]),
@@ -39,7 +40,7 @@ class IsSpamEmailTest extends TestCase
     {
         Event::fake();
 
-        \nickurt\StopForumSpam\Facade::setClient(new Client([
+        StopForumSpam::setClient(new Client([
             'handler' => new MockHandler([
                 new Response(200, [], '{"success":1,"email":{"frequency":0,"appears":0}}')
             ]),
