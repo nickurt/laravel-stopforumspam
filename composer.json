@@ -1,5 +1,5 @@
 {
-    "name": "nickurt/laravel-stopforumspam",
+    "name": "vigstudio/laravel-stopforumspam",
     "description": "StopForumSpam for Laravel 8.x/9.x",
     "keywords": ["stopforumspam", "laravel"],
     "license": "MIT",
