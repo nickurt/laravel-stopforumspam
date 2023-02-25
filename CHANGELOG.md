@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-stopforumspam` will be documented in this file
 
+## 1.8.0 - 2023-02-25
+
+- Adding support for Laravel 10
+
 ## 1.7.1 - 2022-03-16
 
 - Adding support for Laravel 9
