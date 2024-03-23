@@ -10,7 +10,7 @@ class IsSpamEmail implements Rule
     protected $frequency;
 
     /**
-     * @param int $frequency
+     * @param  int  $frequency
      */
     public function __construct($frequency = 10)
     {
@@ -26,9 +26,10 @@ class IsSpamEmail implements Rule
     }
 
     /**
-     * @param string $attribute
-     * @param mixed $value
+     * @param  string  $attribute
+     * @param  mixed  $value
      * @return bool
+     *
      * @throws \Exception
      */
     public function passes($attribute, $value)

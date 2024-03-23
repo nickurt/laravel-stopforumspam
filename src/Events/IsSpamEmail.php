@@ -11,8 +11,7 @@ class IsSpamEmail
     public $frequency;
 
     /**
-     * @param string $email
-     * @param int $frequency
+     * @param  string  $email
      */
     public function __construct($email, int $frequency)
     {

@@ -2,26 +2,18 @@
 
 namespace nickurt\StopForumSpam\tests\Rules;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Http;
 use nickurt\StopForumSpam\Events\IsSpamUsername;
-use nickurt\StopForumSpam\Facade as StopForumSpam;
 use nickurt\StopForumSpam\tests\TestCase;
 
 class IsSpamUsernameTest extends TestCase
 {
-    /** @test */
-    public function it_will_fire_is_spam_username_event_by_a_spam_username_via_validation_rule()
+    public function test_it_will_fire_is_spam_username_event_by_a_spam_username_via_validation_rule()
     {
         Event::fake();
 
-        StopForumSpam::setClient(new Client([
-            'handler' => new MockHandler([
-                new Response(200, [], '{"success":1,"username":{"lastseen":"2020-03-03 15:24:36","frequency":22,"appears":1,"confidence":54.03}}')
-            ]),
-        ]));
+        Http::fake(['https://api.stopforumspam.org/api?username=viagra&json' => Http::response('{"success":1,"username":{"lastseen":"2020-03-03 15:24:36","frequency":22,"appears":1,"confidence":54.03}}')]);
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamUsername(10);
 
@@ -35,16 +27,11 @@ class IsSpamUsernameTest extends TestCase
         });
     }
 
-    /** @test */
-    public function it_will_not_fire_is_spam_username_event_by_a_non_spam_username_via_validation_rule()
+    public function test_it_will_not_fire_is_spam_username_event_by_a_non_spam_username_via_validation_rule()
     {
         Event::fake();
 
-        StopForumSpam::setClient(new Client([
-            'handler' => new MockHandler([
-                new Response(200, [], '{"success":1,"username":{"frequency":0,"appears":0}}')
-            ]),
-        ]));
+        Http::fake(['https://api.stopforumspam.org/api?username=stopforumspam&json' => Http::response('{"success":1,"username":{"frequency":0,"appears":0}}')]);
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamUsername(10);
 

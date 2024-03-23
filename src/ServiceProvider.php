@@ -11,10 +11,10 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
      */
     public function boot()
     {
-        $this->loadTranslationsFrom(__DIR__ . '/../src/Resources/Lang', 'stopforumspam');
+        $this->loadTranslationsFrom(__DIR__.'/../src/Resources/Lang', 'stopforumspam');
 
         $this->publishes([
-            __DIR__ . '/../src/Resources/Lang' => resource_path('lang/vendor/stopforumspam'),
+            __DIR__.'/../src/Resources/Lang' => resource_path('lang/vendor/stopforumspam'),
         ], 'config');
     }
 

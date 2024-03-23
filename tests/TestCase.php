@@ -9,25 +9,25 @@ use nickurt\StopForumSpam\ServiceProvider;
 class TestCase extends \Orchestra\Testbench\TestCase
 {
     /**
-     * @param Application $app
+     * @param  Application  $app
      * @return array
      */
     protected function getPackageAliases($app)
     {
         return [
             'Event' => \Illuminate\Support\Facades\Event::class,
-            'StopForumSpam' => Facade::class
+            'StopForumSpam' => Facade::class,
         ];
     }
 
     /**
-     * @param Application $app
+     * @param  Application  $app
      * @return array
      */
     protected function getPackageProviders($app)
     {
         return [
-            ServiceProvider::class
+            ServiceProvider::class,
         ];
     }
 }

@@ -11,8 +11,7 @@ class IsSpamIp
     public $frequency;
 
     /**
-     * @param string $ip
-     * @param int $frequency
+     * @param  string  $ip
      */
     public function __construct($ip, int $frequency)
     {
