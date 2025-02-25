@@ -13,7 +13,7 @@ class IsSpamIpTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?ip=193.201.224.246&json' => Http::response('{"success":1,"ip":{"lastseen":"2020-03-12 20:17:51","frequency":255,"appears":1,"confidence":99.95,"delegated":"ua","country":"ua","asn":null}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?ip=193.201.224.246&json' => Http::response('{"success":1,"ip":{"value":"193.201.224.246","frequency":255,"appears":1,"lastseen":"2025-02-25 18:20:15","confidence":99.95,"blacklisted":1}}')]);
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamIp(10);
 
@@ -31,7 +31,7 @@ class IsSpamIpTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?ip=191.186.18.61&json' => Http::response('{"success":1,"ip":{"frequency":0,"appears":0,"country":"br","asn":28573}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?ip=191.186.18.61&json' => Http::response('{"success":1,"ip":{"value":"191.186.18.61","frequency":0,"appears":0,"asn":28573,"country":"br"}}')]);
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamIp(10);
 

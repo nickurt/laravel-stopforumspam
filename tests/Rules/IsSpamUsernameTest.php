@@ -13,15 +13,15 @@ class IsSpamUsernameTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?username=viagra&json' => Http::response('{"success":1,"username":{"lastseen":"2020-03-03 15:24:36","frequency":22,"appears":1,"confidence":54.03}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?username=Johnnyloots&json' => Http::response('{"success":1,"username":{"value":"Johnnyloots","appears":1,"frequency":17,"lastseen":"2025-02-25 18:06:47","confidence":79.07}}')]);
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamUsername(10);
 
-        $this->assertFalse($rule->passes('username', 'viagra'));
+        $this->assertFalse($rule->passes('username', 'Johnnyloots'));
 
         Event::assertDispatched(IsSpamUsername::class, function ($e) {
-            $this->assertSame(22, $e->frequency);
-            $this->assertSame('viagra', $e->username);
+            $this->assertSame(17, $e->frequency);
+            $this->assertSame('Johnnyloots', $e->username);
 
             return true;
         });
@@ -31,7 +31,7 @@ class IsSpamUsernameTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?username=stopforumspam&json' => Http::response('{"success":1,"username":{"frequency":0,"appears":0}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?username=stopforumspam&json' => Http::response('{"success":1,"username":{"value":"stopforumspam","frequency":0,"appears":0}}')]);
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamUsername(10);
 

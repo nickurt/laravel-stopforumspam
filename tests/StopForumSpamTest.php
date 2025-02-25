@@ -83,7 +83,7 @@ class StopForumSpamTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?email=adelaidaconnelly911@07stees.online&json' => Http::response('{"success":1,"email":{"lastseen":"2020-03-09 20:39:27","frequency":1,"appears":1,"confidence":18.18}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?email=adelaidaconnelly911@07stees.online&json' => Http::response('{"success":1,"email":{"value":"adelaidaconnelly911@07stees.online","lastseen":"2025-02-25 18:29:05","frequency":255,"appears":1,"confidence":99.95,"blacklisted":1}}')]);
 
         Event::assertNotDispatched(IsSpamEmail::class);
 
@@ -98,13 +98,13 @@ class StopForumSpamTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?email=ltandage56@mail.ru&json' => Http::response('{"success":1,"email":{"lastseen":"2019-07-05 11:19:21","frequency":37096,"appears":1,"confidence":99.99}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?email=anejost52@mail.ru&json' => Http::response('{"success":1,"email":{"value":"anejost52@mail.ru","lastseen":"2025-02-25 18:08:54","frequency":16,"appears":1,"confidence":78.05}}')]);
 
-        $this->stopForumSpam->setEmail('ltandage56@mail.ru')->isSpamEmail();
+        $this->stopForumSpam->setEmail('anejost52@mail.ru')->isSpamEmail();
 
         Event::assertDispatched(IsSpamEmail::class, function ($e) {
-            $this->assertSame(37096, $e->frequency);
-            $this->assertSame('ltandage56@mail.ru', $e->email);
+            $this->assertSame(16, $e->frequency);
+            $this->assertSame('anejost52@mail.ru', $e->email);
 
             return true;
         });
@@ -114,7 +114,7 @@ class StopForumSpamTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?ip=193.201.224.246&json' => Http::response('{"success":1,"ip":{"lastseen":"2019-07-05 11:23:03","frequency":255,"appears":1,"confidence":99.95,"delegated":"ua","country":"us","asn":36352}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?ip=193.201.224.246&json' => Http::response('{"success":1,"ip":{"value":"193.201.224.246","lastseen":"2025-02-25 18:34:43","frequency":255,"appears":1,"confidence":99.95,"blacklisted":1}}')]);
 
         $this->stopForumSpam->setIp('193.201.224.246')->isSpamIp();
 
@@ -130,13 +130,13 @@ class StopForumSpamTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?username=viagra&json' => Http::response('{"success":1,"username":{"lastseen":"2019-06-03 15:13:16","frequency":15,"appears":1,"confidence":8.04}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?username=Johnnyloots&json' => Http::response('{"success":1,"username":{"value":"Johnnyloots","lastseen":"2025-02-25 18:06:47","frequency":17,"appears":1,"confidence":79.07}}')]);
 
-        $this->stopForumSpam->setUsername('viagra')->isSpamUsername();
+        $this->stopForumSpam->setUsername('Johnnyloots')->isSpamUsername();
 
         Event::assertDispatched(IsSpamUsername::class, function ($e) {
-            $this->assertSame(15, $e->frequency);
-            $this->assertSame('viagra', $e->username);
+            $this->assertSame(17, $e->frequency);
+            $this->assertSame('Johnnyloots', $e->username);
 
             return true;
         });
@@ -146,7 +146,7 @@ class StopForumSpamTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?email=xrumertest@this.baddomain.com&json' => Http::response('{"success":1,"email":{"frequency":0,"appears":0}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?email=xrumertest@this.baddomain.com&json' => Http::response('{"success":1,"email":{"value":"xrumertest@this.baddomain.com","frequency":0,"appears":0}}')]);
 
         $this->stopForumSpam->setEmail('xrumertest@this.baddomain.com')->isSpamEmail();
 
@@ -157,7 +157,7 @@ class StopForumSpamTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?ip=191.186.18.61&json' => Http::response('{"success":1,"ip":{"frequency":0,"appears":0,"country":"us","asn":36352}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?ip=191.186.18.61&json' => Http::response('{"success":1,"ip":{"value":"191.186.18.61","frequency":0,"appears":0,"country":"br","asn":28573}}')]);
 
         $this->stopForumSpam->setIp('191.186.18.61')->isSpamIp();
 
@@ -168,7 +168,7 @@ class StopForumSpamTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?username=stopforumspam&json' => Http::response('{"success":1,"username":{"frequency":0,"appears":0}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?username=stopforumspam&json' => Http::response('{"success":1,"username":{"value":"stopforumspam","frequency":0,"appears":0}}')]);
 
         $this->stopForumSpam->setUsername('stopforumspam')->IsSpamUsername();
 

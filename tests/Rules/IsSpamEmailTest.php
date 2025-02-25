@@ -13,15 +13,15 @@ class IsSpamEmailTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?email=ltandage56@mail.ru&json' => Http::response('{"success":1,"email":{"lastseen":"2019-11-01 14:52:36","frequency":24346,"appears":1,"confidence":97.79}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?email=anejost52@mail.ru&json' => Http::response('{"success":1,"email":{"value":"anejost52@mail.ru","lastseen":"2025-02-25 18:08:54","frequency":16,"appears":1,"confidence":78.05}}')]);
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamEmail(10);
 
-        $this->assertFalse($rule->passes('email', 'ltandage56@mail.ru'));
+        $this->assertFalse($rule->passes('email', 'anejost52@mail.ru'));
 
         Event::assertDispatched(IsSpamEmail::class, function ($e) {
-            $this->assertSame(24346, $e->frequency);
-            $this->assertSame('ltandage56@mail.ru', $e->email);
+            $this->assertSame(16, $e->frequency);
+            $this->assertSame('anejost52@mail.ru', $e->email);
 
             return true;
         });
@@ -31,7 +31,7 @@ class IsSpamEmailTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?email=xrumertest@this.baddomain.com&json' => Http::response('{"success":1,"email":{"frequency":0,"appears":0}}')]);
+        Http::fake(['https://api.stopforumspam.org/api?email=xrumertest@this.baddomain.com&json' => Http::response('{"success":1,"email":{"value":"xrumertest@this.baddomain.com","frequency":0,"appears":0}}')]);
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamEmail(10);
 
