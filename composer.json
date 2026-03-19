@@ -1,6 +1,6 @@
 {
     "name": "nickurt/laravel-stopforumspam",
-    "description": "StopForumSpam for Laravel 11.x/12.x",
+    "description": "StopForumSpam for Laravel 11.x/12.x/13.x",
     "keywords": [
         "stopforumspam",
         "laravel"
