@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Http;
 use nickurt\StopForumSpam\Events\IsSpamEmail;
 use nickurt\StopForumSpam\Events\IsSpamIp;
 use nickurt\StopForumSpam\Events\IsSpamUsername;
+use nickurt\StopForumSpam\Exception\MalformedEmailException;
+use nickurt\StopForumSpam\Exception\MalformedIPException;
 use nickurt\StopForumSpam\Exception\MalformedURLException;
 use nickurt\StopForumSpam\Facade as StopForumSpam;
 
@@ -180,5 +182,106 @@ class StopForumSpamTest extends TestCase
         $this->expectException(MalformedURLException::class);
 
         $this->stopForumSpam->setApiUrl('malformed_url');
+    }
+
+    public function test_it_can_report_spam()
+    {
+        Http::fake(['https://www.stopforumspam.com/add.php' => Http::response('', 200)]);
+
+        $result = $this->stopForumSpam
+            ->setApiKey('test-api-key')
+            ->setIp('191.186.18.61')
+            ->setEmail('spam@example.com')
+            ->setUsername('spammer')
+            ->reportSpam();
+
+        $this->assertTrue($result);
+    }
+
+    public function test_it_can_report_spam_with_evidence()
+    {
+        Http::fake(['https://www.stopforumspam.com/add.php' => Http::response('', 200)]);
+
+        $result = $this->stopForumSpam
+            ->setApiKey('test-api-key')
+            ->setIp('191.186.18.61')
+            ->setEmail('spam@example.com')
+            ->setUsername('spammer')
+            ->setEvidence('Posted 50 identical spam messages.')
+            ->reportSpam();
+
+        $this->assertTrue($result);
+    }
+
+    public function test_it_will_throw_exception_when_report_spam_without_api_key()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('StopForumSpam API key is required.');
+
+        $this->stopForumSpam
+            ->setIp('191.186.18.61')
+            ->setEmail('spam@example.com')
+            ->setUsername('spammer')
+            ->reportSpam();
+    }
+
+    public function test_it_will_throw_exception_when_report_spam_without_ip()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('ip is required.');
+
+        $this->stopForumSpam
+            ->setApiKey('test-api-key')
+            ->setEmail('spam@example.com')
+            ->setUsername('spammer')
+            ->reportSpam();
+    }
+
+    public function test_it_will_throw_malformed_ip_exception_when_report_spam_with_invalid_ip()
+    {
+        $this->expectException(MalformedIPException::class);
+
+        $this->stopForumSpam
+            ->setApiKey('test-api-key')
+            ->setIp('not-an-ip')
+            ->setEmail('spam@example.com')
+            ->setUsername('spammer')
+            ->reportSpam();
+    }
+
+    public function test_it_will_throw_exception_when_report_spam_without_email()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('email is required.');
+
+        $this->stopForumSpam
+            ->setApiKey('test-api-key')
+            ->setIp('191.186.18.61')
+            ->setUsername('spammer')
+            ->reportSpam();
+    }
+
+    public function test_it_will_throw_malformed_email_exception_when_report_spam_with_invalid_email()
+    {
+        $this->expectException(MalformedEmailException::class);
+
+        $this->stopForumSpam
+            ->setApiKey('test-api-key')
+            ->setIp('191.186.18.61')
+            ->setEmail('not-an-email')
+            ->setUsername('spammer')
+            ->reportSpam();
+    }
+
+    public function test_it_will_throw_exception_when_report_spam_without_username()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('username is required.');
+
+        $this->stopForumSpam
+            ->setApiKey('test-api-key')
+            ->setIp('191.186.18.61')
+            ->setEmail('spam@example.com')
+            ->reportSpam();
     }
 }

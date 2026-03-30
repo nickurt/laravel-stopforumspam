@@ -8,12 +8,20 @@ use Illuminate\Support\Str;
 use nickurt\StopForumSpam\Events\IsSpamEmail;
 use nickurt\StopForumSpam\Events\IsSpamIp;
 use nickurt\StopForumSpam\Events\IsSpamUsername;
+use nickurt\StopForumSpam\Exception\MalformedEmailException;
+use nickurt\StopForumSpam\Exception\MalformedIPException;
 use nickurt\StopForumSpam\Exception\MalformedURLException;
 
 class StopForumSpam
 {
     /** @var string */
     protected $apiUrl = 'https://api.stopforumspam.org/api';
+
+    /** @var string */
+    protected $reportSpamUrl = 'https://www.stopforumspam.com/add.php';
+
+    /** @var string */
+    protected $apiKey;
 
     /** @var string */
     protected $email;
@@ -26,6 +34,9 @@ class StopForumSpam
 
     /** @var string */
     protected $username;
+
+    /** @var string */
+    protected $evidence;
 
     /**
      * @return bool
@@ -91,6 +102,29 @@ class StopForumSpam
     }
 
     /**
+    * @return string
+    */
+    public function getReportSpamUrl(): string
+    {
+        return $this->reportSpamUrl;
+    }
+
+    /**
+    * @param string $reportSpamUrl
+    * @return $this
+    */
+    public function setReportSpamUrl(string $reportSpamUrl): static
+    {
+        if (filter_var($reportSpamUrl, FILTER_VALIDATE_URL) === false) {
+            throw new MalformedURLException();
+        }
+
+        $this->reportSpamUrl = $reportSpamUrl;
+
+        return $this;
+    }
+
+    /**
      * @param  string  $apiUrl
      * @return $this
      */
@@ -101,6 +135,25 @@ class StopForumSpam
         }
 
         $this->apiUrl = $apiUrl;
+
+        return $this;
+    }
+
+    /**
+    * @return string
+    */
+    public function getApiKey(): ?string
+    {
+        return $this->apiKey;
+    }
+
+    /**
+    * @param string $apiKey
+    * @return $this
+    */
+    public function setApiKey(string $apiKey): static
+    {
+        $this->apiKey = $apiKey;
 
         return $this;
     }
@@ -216,5 +269,100 @@ class StopForumSpam
         $this->username = $username;
 
         return $this;
+    }
+
+    /**
+     * @return string
+    */
+    public function getEvidence(): ?string
+    {
+        return $this->evidence;
+    }
+
+    /**
+    * @param string $evidence
+    * @return $this
+    */
+    public function setEvidence(string $evidence): static
+    {
+        $this->evidence = $evidence;
+
+        return $this;
+    }
+
+    /**
+     * POST to the given URL and return the HTTP status code.
+     * Fields are UTF-8 encoded and urlencoded as required by the SFS API.
+     *
+     * @param string $url
+     * @param array  $fields
+     * @return int
+     * @throws \Exception
+     */
+    protected function getResponseCode(string $url, array $fields): int
+    {
+        $encodedFields = http_build_query($fields);
+
+        try {
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ])->send('POST', $url, [
+                'body' => $encodedFields,
+            ]);
+        } catch (\Exception $e) {
+            throw new \Exception('StopForumSpam request failed: ' . $e->getMessage());
+        }
+
+        return $response->status();
+    }
+
+    /**
+     * Submit a spam report to Stop Forum Spam.
+     * Requires api_key, ip, email, and username. Evidence is optional.
+     *
+     * See "Adding to the Database": https://www.stopforumspam.com/usage
+     *
+     * @return bool
+     * @throws \Exception
+     * @throws MalformedEmailException
+     */
+    public function reportSpam(): bool
+    {
+        if (empty($this->getApiKey())) {
+            throw new Exception('StopForumSpam API key is required.');
+        }
+
+        if (empty($this->getIp())) {
+            throw new Exception('ip is required.');
+        }
+
+        if (filter_var($this->getIp(), FILTER_VALIDATE_IP) === false) {
+            throw new MalformedIPException();
+        }
+
+        if (empty($this->getEmail())) {
+            throw new Exception('email is required.');
+        }
+
+        if (filter_var($this->getEmail(), FILTER_VALIDATE_EMAIL) === false) {
+            throw new MalformedEmailException();
+        }
+
+        if (empty($this->getUsername())) {
+            throw new Exception('username is required.');
+        }
+
+        $fields = [
+            'api_key'  => $this->getApiKey(),
+            'ip_addr'  => $this->getIp(),
+            'email'    => $this->getEmail(),
+            'username' => mb_convert_encoding($this->getUsername(), 'UTF-8'),
+        ];
+
+        if (!empty($this->getEvidence())) {
+            $fields['evidence'] = mb_convert_encoding($this->getEvidence(), 'UTF-8');
+        }
+
+        return $this->getResponseCode($this->getReportSpamUrl(), $fields) === 200;
     }
 }
