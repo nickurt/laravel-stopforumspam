@@ -98,7 +98,9 @@ The `IsSpamUsername`-rule has one optional paramter `frequency` (default 10) to 
 
 #### Adding to the Database
 
-You can report a spammer to the StopForumSpam database using `addToDatabase()`. This requires an API key (set `STOPFORUMSPAM_APIKEY` in your `.env`) and all three of: `ip`, `email`, and `username`. Evidence is optional.
+You can report a spammer to the StopForumSpam database using `addToDatabase()`. This requires an API key (set `STOPFORUMSPAM_APIKEY` in your `.env`) and all three of: `ip`, `email`, and `username`. Evidence is optional and should be the post content. Do not include your email or site URL in Evidence.
+
+See Adding to the Database for more information: https://www.stopforumspam.com/usage
 
 ```php
 \StopForumSpam::setIp('8.8.8.8')
