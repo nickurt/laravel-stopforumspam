@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-stopforumspam` will be documented in this file
 
+## 2.2.0 - 2026-04-07
+
+- Add ability to submit spam to SFS database (#30)
+
 ## 2.1.0 - 2026-03-19
 
 - Adding support for Laravel 13 (#28)
