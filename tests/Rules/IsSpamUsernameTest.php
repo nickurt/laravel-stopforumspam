@@ -13,7 +13,7 @@ class IsSpamUsernameTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?username=Johnnyloots&json' => Http::response('{"success":1,"username":{"value":"Johnnyloots","appears":1,"frequency":17,"lastseen":"2025-02-25 18:06:47","confidence":79.07}}')]);
+        Http::fake(['api.stopforumspam.org/*' => Http::response('{"success":1,"username":{"value":"Johnnyloots","appears":1,"frequency":17,"lastseen":"2025-02-25 18:06:47","confidence":79.07}}')]);
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamUsername(10);
 
@@ -31,7 +31,7 @@ class IsSpamUsernameTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?username=stopforumspam&json' => Http::response('{"success":1,"username":{"value":"stopforumspam","frequency":0,"appears":0}}')]);
+        Http::fake(['api.stopforumspam.org/*' => Http::response('{"success":1,"username":{"value":"stopforumspam","frequency":0,"appears":0}}')]);
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamUsername(10);
 

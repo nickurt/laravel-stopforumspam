@@ -13,7 +13,7 @@ class IsSpamEmailTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?email=anejost52@mail.ru&json' => Http::response('{"success":1,"email":{"value":"anejost52@mail.ru","lastseen":"2025-02-25 18:08:54","frequency":16,"appears":1,"confidence":78.05}}')]);
+        Http::fake(['api.stopforumspam.org/*' => Http::response('{"success":1,"email":{"value":"anejost52@mail.ru","lastseen":"2025-02-25 18:08:54","frequency":16,"appears":1,"confidence":78.05}}')]);
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamEmail(10);
 
@@ -31,7 +31,7 @@ class IsSpamEmailTest extends TestCase
     {
         Event::fake();
 
-        Http::fake(['https://api.stopforumspam.org/api?email=xrumertest@this.baddomain.com&json' => Http::response('{"success":1,"email":{"value":"xrumertest@this.baddomain.com","frequency":0,"appears":0}}')]);
+        Http::fake(['api.stopforumspam.org/*' => Http::response('{"success":1,"email":{"value":"xrumertest@this.baddomain.com","frequency":0,"appears":0}}')]);
 
         $rule = new \nickurt\StopForumSpam\Rules\IsSpamEmail(10);
 

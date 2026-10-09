@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-stopforumspam` will be documented in this file
 
+## Unreleased
+
+- Encode StopForumSpam API query parameters via Laravel's HTTP client instead of interpolating raw values into the URL (fixes `InvalidArgumentException: Invalid URI template` for emails/usernames containing reserved characters such as `{`)
+
 ## 2.2.0 - 2026-04-07
 
 - Add ability to submit spam to SFS database (#30)

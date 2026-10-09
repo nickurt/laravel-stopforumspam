@@ -46,11 +46,9 @@ class StopForumSpam
     public function isSpamEmail()
     {
         $result = cache()->remember('laravel-stopforumspam-'.Str::slug($this->getEmail()), 10, function () {
-            return $this->getResponseData(
-                sprintf('%s?email=%s&json',
-                    $this->getApiUrl(),
-                    $this->getEmail()
-                ));
+            return $this->getResponseData([
+                'email' => $this->getEmail(),
+            ]);
         });
 
         if (isset($result['success']) && $result['success']) {
@@ -86,11 +84,17 @@ class StopForumSpam
     }
 
     /**
+     * @param  array<string, scalar|null>  $query
      * @return array|mixed
      */
-    protected function getResponseData($url)
+    protected function getResponseData(array $query)
     {
-        return Http::get($url)->json();
+        // Pass query parameters separately so Laravel's HTTP client encodes them.
+        // Interpolating raw values into the URL breaks on reserved characters (e.g. "{")
+        // because the client expands URLs containing "{" as URI templates.
+        return Http::get($this->getApiUrl(), array_merge($query, [
+            'json' => true,
+        ]))->json();
     }
 
     /**
@@ -185,11 +189,9 @@ class StopForumSpam
     public function isSpamIp()
     {
         $result = cache()->remember('laravel-stopforumspam-'.Str::slug($this->getIp()), 10, function () {
-            return $this->getResponseData(
-                sprintf('%s?ip=%s&json',
-                    $this->getApiUrl(),
-                    $this->getIp()
-                ));
+            return $this->getResponseData([
+                'ip' => $this->getIp(),
+            ]);
         });
 
         if (isset($result['success']) && $result['success']) {
@@ -232,11 +234,9 @@ class StopForumSpam
     public function isSpamUsername()
     {
         $result = cache()->remember('laravel-stopforumspam-'.Str::slug($this->getUsername()), 10, function () {
-            return $this->getResponseData(
-                sprintf('%s?username=%s&json',
-                    $this->getApiUrl(),
-                    $this->getUsername()
-                ));
+            return $this->getResponseData([
+                'username' => $this->getUsername(),
+            ]);
         });
 
         if (isset($result['success']) && $result['success']) {
