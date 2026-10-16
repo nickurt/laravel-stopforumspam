@@ -2,9 +2,9 @@
 
 All notable changes to `laravel-stopforumspam` will be documented in this file
 
-## Unreleased
+## 2.3.0 - 2026-10-16
 
-- Encode StopForumSpam API query parameters via Laravel's HTTP client instead of interpolating raw values into the URL (fixes `InvalidArgumentException: Invalid URI template` for emails/usernames containing reserved characters such as `{`)
+- Encode StopForumSpam API query parameters via Laravel's HTTP client instead of interpolating raw values into the URL (fixes `InvalidArgumentException: Invalid URI template` for emails/usernames containing reserved characters such as `{`) (#31)
 
 ## 2.2.0 - 2026-04-07
 
